@@ -74,7 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         document.getElementById("addQuoteBtn").addEventListener("click", addQuote);
         document.getElementById("exportBtn").addEventListener("click", exportQuotes); // Updated export button
-        document.getElementById("importFile").addEventListener("change", importFromJsonFile);
+        document.getElementById("importFile").addEventListener("change", importFromJsonFile); // Import functionality
         document.getElementById("syncBtn").addEventListener("click", fetchQuotesFromServer);
         document.getElementById("syncLocalBtn").addEventListener("click", syncQuotes);
     }
@@ -115,6 +115,31 @@ document.addEventListener("DOMContentLoaded", () => {
         link.href = URL.createObjectURL(blob);
         link.download = "quotes.json"; // The file name for the exported quotes
         link.click();
+    }
+
+    // Function for importing quotes from a JSON file
+    function importFromJsonFile(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const importedQuotes = JSON.parse(e.target.result);
+                if (Array.isArray(importedQuotes)) {
+                    quotes = [...quotes, ...importedQuotes];
+                    localStorage.setItem("quotes", JSON.stringify(quotes));
+                    populateCategories();
+                    alert("Quotes imported successfully!");
+                } else {
+                    alert("Invalid file format. Please upload a valid JSON file.");
+                }
+            } catch (error) {
+                console.error("Error reading the file:", error);
+                alert("Error importing the file.");
+            }
+        };
+        reader.readAsText(file);
     }
 
     newQuoteBtn.addEventListener("click", showRandomQuote);
