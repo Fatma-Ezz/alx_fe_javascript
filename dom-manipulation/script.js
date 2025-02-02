@@ -118,4 +118,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (lastViewedQuote) {
         quoteDisplay.textContent = `"${lastViewedQuote.text}" - (${lastViewedQuote.category})`;
     }
+
+    setInterval(fetchQuotesFromServer, 30000);
 });
