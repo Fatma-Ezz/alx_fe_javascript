@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
             quotes = [...quotes, ...serverQuotes];
             localStorage.setItem("quotes", JSON.stringify(quotes));
             populateCategories();
-            alert("Quotes synced with server!");  // Updated the alert text here
+            alert("Quotes synced with server!");
         } catch (error) {
             console.error("Error fetching quotes from server:", error);
         }
@@ -73,7 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.body.appendChild(formContainer);
 
         document.getElementById("addQuoteBtn").addEventListener("click", addQuote);
-        document.getElementById("exportBtn").addEventListener("click", exportQuotes);
+        document.getElementById("exportBtn").addEventListener("click", exportQuotes); // Updated export button
         document.getElementById("importFile").addEventListener("change", importFromJsonFile);
         document.getElementById("syncBtn").addEventListener("click", fetchQuotesFromServer);
         document.getElementById("syncLocalBtn").addEventListener("click", syncQuotes);
@@ -106,6 +106,15 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("newQuoteText").value = "";
         document.getElementById("newQuoteCategory").value = "";
         populateCategories();
+    }
+
+    function exportQuotes() {
+        const quotesJson = JSON.stringify(quotes, null, 2);
+        const blob = new Blob([quotesJson], { type: "application/json" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "quotes.json"; // The file name for the exported quotes
+        link.click();
     }
 
     newQuoteBtn.addEventListener("click", showRandomQuote);
