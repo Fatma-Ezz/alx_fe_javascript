@@ -72,7 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("syncBtn").addEventListener("click", fetchQuotesFromServer);
     }
 
-    function addQuote() {
+    async function addQuote() {
         const newQuoteText = document.getElementById("newQuoteText").value;
         const newQuoteCategory = document.getElementById("newQuoteCategory").value;
         
@@ -81,11 +81,23 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
         
-        quotes.push({ text: newQuoteText, category: newQuoteCategory });
+        const newQuote = { text: newQuoteText, category: newQuoteCategory };
+        quotes.push(newQuote);
         localStorage.setItem("quotes", JSON.stringify(quotes));
+        
+        try {
+            await fetch("https://jsonplaceholder.typicode.com/posts", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(newQuote)
+            });
+            alert("Quote added and synced with server!");
+        } catch (error) {
+            console.error("Error syncing with server:", error);
+        }
+        
         document.getElementById("newQuoteText").value = "";
         document.getElementById("newQuoteCategory").value = "";
-        alert("Quote added successfully!");
         populateCategories();
     }
 
