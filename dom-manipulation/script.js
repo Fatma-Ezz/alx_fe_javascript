@@ -24,6 +24,11 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    function syncQuotes() {
+        localStorage.setItem("quotes", JSON.stringify(quotes));
+        alert("Quotes synced successfully!");
+    }
+
     function populateCategories() {
         const categories = ["All Categories", ...new Set(quotes.map(q => q.category))];
         categoryFilter.innerHTML = categories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
@@ -62,6 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <button id="addQuoteBtn">Add Quote</button>
             <button id="exportBtn">Export Quotes</button>
             <button id="syncBtn">Sync with Server</button>
+            <button id="syncLocalBtn">Sync Locally</button>
             <input type="file" id="importFile" accept=".json" />
         `;
         document.body.appendChild(formContainer);
@@ -70,6 +76,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("exportBtn").addEventListener("click", exportQuotes);
         document.getElementById("importFile").addEventListener("change", importFromJsonFile);
         document.getElementById("syncBtn").addEventListener("click", fetchQuotesFromServer);
+        document.getElementById("syncLocalBtn").addEventListener("click", syncQuotes);
     }
 
     async function addQuote() {
@@ -101,37 +108,6 @@ document.addEventListener("DOMContentLoaded", () => {
         populateCategories();
     }
 
-    function exportQuotes() {
-        const blob = new Blob([JSON.stringify(quotes, null, 2)], { type: "application/json" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "quotes.json";
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-    }
-
-    function importFromJsonFile(event) {
-        const fileReader = new FileReader();
-        fileReader.onload = function(event) {
-            try {
-                const importedQuotes = JSON.parse(event.target.result);
-                if (Array.isArray(importedQuotes)) {
-                    quotes.push(...importedQuotes);
-                    localStorage.setItem("quotes", JSON.stringify(quotes));
-                    alert("Quotes imported successfully!");
-                    populateCategories();
-                } else {
-                    alert("Invalid file format. Please upload a valid JSON file.");
-                }
-            } catch (error) {
-                alert("Error reading file. Please ensure it is a valid JSON file.");
-            }
-        };
-        fileReader.readAsText(event.target.files[0]);
-    }
-    
     newQuoteBtn.addEventListener("click", showRandomQuote);
     categoryFilter.addEventListener("change", filterQuotes);
     createAddQuoteForm();
