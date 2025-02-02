@@ -1,13 +1,30 @@
 document.addEventListener("DOMContentLoaded", () => {
     let quotes = JSON.parse(localStorage.getItem("quotes")) || [
-        { text: "The only limit to our realization of tomorrow is our doubts of today.", category: "Motivation" },
-        { text: "Do what you can, with what you have, where you are.", category: "Inspiration" },
-        { text: "Act as if what you do makes a difference. It does.", category: "Life" }
+        { text: "The only limit to our realization of tomorrow is our doubts of today.", author: "Franklin D. Roosevelt", category: "Motivation" },
+        { text: "Do what you can, with what you have, where you are.", author: "Theodore Roosevelt", category: "Inspiration" },
+        { text: "Act as if what you do makes a difference. It does.", author: "William James", category: "Life" }
     ];
 
+    const categoryFilter = document.getElementById("categoryFilter");
+    const quoteContainer = document.getElementById("quoteContainer");
     const quoteDisplay = document.getElementById("quoteDisplay");
     const newQuoteBtn = document.getElementById("newQuote");
-    
+
+    function populateCategories() {
+        const categories = ["All Categories", ...new Set(quotes.map(q => q.category))];
+        categoryFilter.innerHTML = categories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
+        const savedCategory = localStorage.getItem("selectedCategory") || "All Categories";
+        categoryFilter.value = savedCategory;
+        filterQuotes();
+    }
+
+    function filterQuotes() {
+        const selectedCategory = categoryFilter.value;
+        localStorage.setItem("selectedCategory", selectedCategory);
+        const filteredQuotes = selectedCategory === "All Categories" ? quotes : quotes.filter(q => q.category === selectedCategory);
+        quoteContainer.innerHTML = filteredQuotes.map(q => `<p>"${q.text}" - ${q.author} (${q.category})</p>`).join('');
+    }
+
     function showRandomQuote() {
         if (quotes.length === 0) {
             quoteDisplay.innerHTML = "<p>No quotes available.</p>";
@@ -48,6 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("newQuoteText").value = "";
         document.getElementById("newQuoteCategory").value = "";
         alert("Quote added successfully!");
+        populateCategories();
     }
 
     function exportQuotes() {
@@ -70,6 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     quotes.push(...importedQuotes);
                     localStorage.setItem("quotes", JSON.stringify(quotes));
                     alert("Quotes imported successfully!");
+                    populateCategories();
                 } else {
                     alert("Invalid file format. Please upload a valid JSON file.");
                 }
@@ -81,8 +100,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     
     newQuoteBtn.addEventListener("click", showRandomQuote);
-    createAddQuoteForm(); // Create the form for adding quotes
-    showRandomQuote(); // Display a quote initially
+    categoryFilter.addEventListener("change", filterQuotes);
+    createAddQuoteForm();
+    populateCategories();
+    showRandomQuote();
     
     const lastViewedQuote = JSON.parse(sessionStorage.getItem("lastViewedQuote"));
     if (lastViewedQuote) {
