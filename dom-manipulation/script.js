@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
             quotes = [...quotes, ...serverQuotes];
             localStorage.setItem("quotes", JSON.stringify(quotes));
             populateCategories();
-            alert("Quotes synced from server.");
+            alert("Quotes synced with server!");  // Updated the alert text here
         } catch (error) {
             console.error("Error fetching quotes from server:", error);
         }
