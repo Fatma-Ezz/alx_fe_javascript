@@ -22,16 +22,21 @@ document.addEventListener("DOMContentLoaded", () => {
         const selectedCategory = categoryFilter.value;
         localStorage.setItem("selectedCategory", selectedCategory);
         const filteredQuotes = selectedCategory === "All Categories" ? quotes : quotes.filter(q => q.category === selectedCategory);
-        quoteContainer.innerHTML = filteredQuotes.map(q => `<p>"${q.text}" - ${q.author} (${q.category})</p>`).join('');
+        quoteContainer.textContent = "";
+        filteredQuotes.forEach(q => {
+            const quoteElement = document.createElement("p");
+            quoteElement.textContent = `"${q.text}" - ${q.author} (${q.category})`;
+            quoteContainer.appendChild(quoteElement);
+        });
     }
 
     function showRandomQuote() {
         if (quotes.length === 0) {
-            quoteDisplay.innerHTML = "<p>No quotes available.</p>";
+            quoteDisplay.textContent = "No quotes available.";
             return;
         }
         const randomIndex = Math.floor(Math.random() * quotes.length);
-        quoteDisplay.innerHTML = `<p>"${quotes[randomIndex].text}" - <strong>(${quotes[randomIndex].category})</strong></p>`;
+        quoteDisplay.textContent = `"${quotes[randomIndex].text}" - (${quotes[randomIndex].category})`;
         sessionStorage.setItem("lastViewedQuote", JSON.stringify(quotes[randomIndex]));
     }
 
@@ -107,6 +112,6 @@ document.addEventListener("DOMContentLoaded", () => {
     
     const lastViewedQuote = JSON.parse(sessionStorage.getItem("lastViewedQuote"));
     if (lastViewedQuote) {
-        quoteDisplay.innerHTML = `<p>"${lastViewedQuote.text}" - <strong>(${lastViewedQuote.category})</strong></p>`;
+        quoteDisplay.textContent = `"${lastViewedQuote.text}" - (${lastViewedQuote.category})`;
     }
 });
